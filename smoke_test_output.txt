@@ -1,0 +1,58 @@
+[robosuite WARNING] No private macro file found! (macros.py:53)
+[robosuite WARNING] It is recommended to use a private macro file (macros.py:54)
+[robosuite WARNING] To setup, run: python /home/hatch/workspace/cpsc6430_t2/venv/lib/python3.12/site-packages/robosuite/scripts/setup_macros.py (macros.py:55)
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[Warning]: datasets path /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/../datasets does not exist!
+benchmark_root: /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero
+[Warning]: datasets path /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/../datasets does not exist!
+bddl_files: /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/./bddl_files
+[Warning]: datasets path /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/../datasets does not exist!
+init_states: /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/./init_files
+[Warning]: datasets path /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/../datasets does not exist!
+datasets: /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/../datasets
+suites: ['libero_10', 'libero_100', 'libero_90', 'libero_goal', 'libero_object', 'libero_spatial']
+[info] using task orders [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+libero_goal num tasks: 10
+task 0 name: open_the_middle_drawer_of_the_cabinet
+task 0 language: open the middle drawer of the cabinet
+task 0 problem_folder: libero_goal
+task 0 bddl_file: open_the_middle_drawer_of_the_cabinet.bddl
+[Warning]: datasets path /home/hatch/workspace/cpsc6430_t2/LIBERO/libero/libero/../datasets does not exist!
+env created: OffScreenRenderEnv
+reset OK (seed=42)
+OBSERVATION KEYS:
+  akita_black_bowl_1_pos: shape=(3,) dtype=float64
+  akita_black_bowl_1_quat: shape=(4,) dtype=float64
+  akita_black_bowl_1_to_robot0_eef_pos: shape=(3,) dtype=float64
+  akita_black_bowl_1_to_robot0_eef_quat: shape=(4,) dtype=float32
+  cream_cheese_1_pos: shape=(3,) dtype=float64
+  cream_cheese_1_quat: shape=(4,) dtype=float64
+  cream_cheese_1_to_robot0_eef_pos: shape=(3,) dtype=float64
+  cream_cheese_1_to_robot0_eef_quat: shape=(4,) dtype=float32
+  object-state: shape=(56,) dtype=float64
+  plate_1_pos: shape=(3,) dtype=float64
+  plate_1_quat: shape=(4,) dtype=float64
+  plate_1_to_robot0_eef_pos: shape=(3,) dtype=float64
+  plate_1_to_robot0_eef_quat: shape=(4,) dtype=float32
+  robot0_eef_pos: shape=(3,) dtype=float64
+  robot0_eef_quat: shape=(4,) dtype=float64
+  robot0_gripper_qpos: shape=(2,) dtype=float64
+  robot0_gripper_qvel: shape=(2,) dtype=float64
+  robot0_joint_pos: shape=(7,) dtype=float64
+  robot0_joint_pos_cos: shape=(7,) dtype=float64
+  robot0_joint_pos_sin: shape=(7,) dtype=float64
+  robot0_joint_vel: shape=(7,) dtype=float64
+  robot0_proprio-state: shape=(39,) dtype=float64
+  wine_bottle_1_pos: shape=(3,) dtype=float64
+  wine_bottle_1_quat: shape=(4,) dtype=float64
+  wine_bottle_1_to_robot0_eef_pos: shape=(3,) dtype=float64
+  wine_bottle_1_to_robot0_eef_quat: shape=(4,) dtype=float32
+ACTION SPACE: (array([-1., -1., -1., -1., -1., -1., -1.]), array([1., 1., 1., 1., 1., 1., 1.]))
+action dim: 7 | low: [-1. -1. -1. -1. -1. -1. -1.] | high: [1. 1. 1. 1. 1. 1. 1.]
+one random step OK | reward: 0.0 | done: False
+check_success(): False
+task 1 name: put_the_bowl_on_the_stove
+task 1 language: put the bowl on the stove
+SMOKE TEST DONE
