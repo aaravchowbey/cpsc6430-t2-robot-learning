@@ -88,7 +88,7 @@ C:\Users\owenr\Desktop\libero-data\libero_goal\
     ... eight other LIBERO-Goal task files
 ```
 
-The full Goal download is approximately 6.4 GB. Keep the `.hdf5` files outside Git. Commit download instructions and split manifests identifying the selected episodes instead. Each HDF5 file contains episodes under `data/demo_*`, rather than separate episode files. Episode arrays can include camera observations, actions, and simulator states; the selected files' exact fields and episode counts still need inspection.
+The full Goal download is approximately 6.4 GB. Keep the `.hdf5` files outside Git. Commit download instructions and split manifests identifying the selected episodes instead. Each HDF5 file contains episodes under `data/demo_*`, rather than separate episode files. The selected files have been inspected; their fields and episode counts are documented below.
 
 Download command used, run from the project root:
 
@@ -100,12 +100,19 @@ Get-ChildItem C:\Users\owenr\Desktop\libero-data\libero_goal -Filter *.hdf5
 
 Pass this external data location explicitly to future inspection, replay, and training scripts; the download command does not update LIBERO's default dataset configuration.
 
-### Next steps
+### Data and simulator progress
 
-1. Inspect the two selected HDF5 files: count episodes and check observation, action, and simulator-state fields.
-2. Verify rendering, saved-state restoration, demonstration replay, and task-success checks. Save example demonstration videos and label them as replay.
-3. Select 60–100 simulated demonstrations, at least 30 per task. Create approximately 70/15/15 train/validation/test manifests by whole episode and initial-state or session group, keeping related samples together.
-4. Implement and train the three proposed policy variants, then evaluate 20 held-out autonomous rollouts per variant per task using common held-out initial states and seeds.
+- Completed: inspect both selected HDF5 files and select all 100 demonstrations, 50 per task.
+- Completed: create and verify frozen 70/15/15 episode split manifests; document grouping and the missing-session-ID limitation below.
+- Completed: simulator smoke test and drawer state/action replay, including state restoration and simulator success checks.
+- User reviewed the bowl replay video and reported that it looks correct. Its terminal success result has not been supplied in the chat; visual appearance alone does not establish the simulator success result.
+
+Remaining data/simulator evidence for the final submission:
+
+1. Retain the labeled replay MP4s for both tasks and capture each command's state-restoration and simulator-success output. Confirm the bowl replay's printed result.
+2. Include example demonstration videos, split counts/manifests, simulator details, and the missing-session-ID limitation in the report and submission ZIP. The README does not replace the report or videos.
+
+Next implementation work: build the data loader and train the three proposed policy variants, then evaluate 20 held-out autonomous rollouts per variant per task using common held-out initial states and seeds.
 
 Inspection found 50 demonstrations in each selected file (100 total). Both contain `actions`, `dones`, `obs`, `rewards`, `robot_states`, and `states`. Camera observations are named `agentview_rgb` and `eye_in_hand_rgb`; other observations include end-effector, gripper, and joint states. The inspected drawer episode has 138 actions and the bowl episode has 94, each with seven action components; lengths vary by episode.
 
