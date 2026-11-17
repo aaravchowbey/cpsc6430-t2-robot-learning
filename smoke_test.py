@@ -3,15 +3,16 @@
 Creates a LIBERO-Goal environment, resets with a seed, prints observation
 keys and the action space, takes one random step, and calls check_success().
 
-Rendering note: this VM is headless and has no libEGL/libOSMesa, and
-robosuite 1.4.1's default macros force MUJOCO_GL=egl. Setting MUJOCO_GL=glx
-(the macros exemption list) makes robosuite fall back to the GLFW context for
-imports, and we run with use_camera_obs=False so no GL context is created.
-Camera observations are the documented next step (needs libosmesa6/egl).
+Rendering uses GLFW on Windows and GLX under Xvfb on headless Linux.
+Windows robosuite 1.4.1 also needs MUJOCO_GPU_RENDERING=False in its
+macros_private.py so it does not override GLFW with Linux-only EGL.
 """
 import os
 
-os.environ.setdefault("MUJOCO_GL", "glx")  # must be set before robosuite import
+if os.name == "nt":
+    os.environ["MUJOCO_GL"] = "glfw"
+else:
+    os.environ.setdefault("MUJOCO_GL", "glx")
 
 import numpy as np
 
