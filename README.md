@@ -112,7 +112,38 @@ Remaining data/simulator evidence for the final submission:
 1. Retain the labeled replay MP4s for both tasks and capture each command's state-restoration and simulator-success output. Confirm the bowl replay's printed result.
 2. Include example demonstration videos, split counts/manifests, simulator details, and the missing-session-ID limitation in the report and submission ZIP. The README does not replace the report or videos.
 
-Next implementation work: build the data loader and train the three proposed policy variants, then evaluate 20 held-out autonomous rollouts per variant per task using common held-out initial states and seeds.
+The shared data loader, three policy variants, and autonomous validation runner are available below. The final 20-rollout evaluation per variant per task still needs a common held-out start-state plan.
+
+### Train and run the policies
+
+Run from the repository root with the Windows Python path above:
+
+```powershell
+$dataDir = 'C:\Users\owenr\Desktop\libero-data\libero_goal'
+$env:NUMBA_CACHE_DIR = Join-Path $env:TEMP 'libero-numba'
+& $projectPython train_policy.py --data-dir $dataDir --smoke --epochs 35
+& $projectPython train_policy.py --data-dir $dataDir --variant all --epochs 20
+
+foreach ($variant in @('vision', 'dense', 'grid')) {
+    & $projectPython run_policy.py --checkpoint "output/policies/$variant.pt" --data-dir $dataDir --results "output/policies/${variant}_validation.csv" --video-dir output/policies/validation --per-task 1 --max-steps 300
+}
+```
+
+The loader follows the frozen manifests and pairs both post-action RGB frames at index `i` with action `i+1` in the same episode. It resizes each camera to 48×48 with area interpolation and scales image values to [0, 1] in the model. The full run has 8,411 training pairs and 1,844 validation pairs. The smoke run reuses 32 training pairs to check optimization.
+
+Each policy uses a shared-weight CNN across the two camera views, learned camera and coordinate embeddings, attention pooling, and a seven-component action head. The vision variant uses RGB only. The other variants embed bag-of-words counts for the two fixed training instructions. The dense variants supply 32 visual tokens to attention. Grid Sampler predicts one normalized coordinate per camera from globally pooled features and the instruction, samples each feature map with differentiable bilinear interpolation, and adds a learned embedding of the sampled coordinates. All models start from random weights and train with AdamW, a batch size of 128, a learning rate of 0.001, and mean squared action error. The best validation loss determines the saved checkpoint.
+
+The runner restores the specified initial scene and uses live camera images to predict every action. It stops at simulator success, environment termination, or 300 control steps. The CSV records outcomes, step counts, visual tokens, and CPU inference latency including image preprocessing. The optional MP4s show the policy name, task ID, episode, seed, and simulator success. Pass `--task 0 --episode demo_12` to rerun one specific start. Use a new results filename when repeating a run. The loop above runs two validation trials per variant. The demonstration test split has fewer than 20 independent starts per task, so these commands alone do not fulfill the final rollout requirement.
+
+Initial CPU validation used drawer `demo_12` and bowl `demo_1`, both with seed 42. The checkpoints, loss logs, rollout CSVs, and labeled videos are in `output/policies/`.
+
+| Policy | Selected epoch | Validation action MSE | Visual tokens | Drawer | Bowl |
+|---|---:|---:|---:|---|---|
+| Vision-only | 20 | 0.03277 | 32 | Timed out | Timed out |
+| Dense image-language | 20 | 0.02546 | 32 | Timed out | Success at step 89 |
+| Learned Grid Sampler | 18 | 0.03249 | 2 | Timed out | Timed out |
+
+A separate dense drawer trial on validation episode `demo_15` (seed 43) also timed out. These trials establish that all variants execute autonomously and that the dense policy can complete the bowl task on this validation start. Autonomous drawer completion and the final held-out comparison are still pending.
 
 Inspection found 50 demonstrations in each selected file (100 total). Both contain `actions`, `dones`, `obs`, `rewards`, `robot_states`, and `states`. Camera observations are named `agentview_rgb` and `eye_in_hand_rgb`; other observations include end-effector, gripper, and joint states. The inspected drawer episode has 138 actions and the bowl episode has 94, each with seven action components; lengths vary by episode.
 
@@ -127,7 +158,7 @@ Inspection found 50 demonstrations in each selected file (100 total). Both conta
 
 Videos are saved under `output/replays/`. The default `--mode states` restores successive recorded states for faithful visualization. To test stepping the simulator with recorded actions from the restored starting state, add `--mode actions`. Action replay can diverge when simulator versions or controller behavior differ from data collection. The printed seed identifies the reset before restoration; the recorded state determines the replay's actual starting scene.
 
-The drawer task's `demo_0` state and action replays passed restoration and finished with simulator success `True` on Windows. These are demonstration replays, not autonomous learned-policy runs. Policy training and autonomous evaluation remain unfinished.
+The drawer task's `demo_0` state and action replays passed restoration and finished with simulator success `True` on Windows. These are demonstration replays, not autonomous learned-policy runs.
 
 ### Frozen episode splits
 

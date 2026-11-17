@@ -1,0 +1,3 @@
+variant,epoch,smoke,split,task_id,episode,seed,outcome,steps,mean_inference_ms,visual_tokens
+dense,20,False,validation,0,demo_12,42,timeout,300,15.476732334354892,32
+dense,20,False,validation,1,demo_1,42,success,89,5.688355058389768,32
