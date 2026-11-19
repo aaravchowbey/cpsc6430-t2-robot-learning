@@ -31,74 +31,73 @@ Simulator stack installed and verified. A seeded smoke test on LIBERO-Goal task 
 
 The test also passed on the local Windows installation on November 17, 2026, ending with `SMOKE TEST DONE`. The random action returned reward `0.0`, `done=False`, and `check_success()=False`, as expected; this is a simulator check, not evidence of a trained policy completing the task. The existing setup logs and captured output describe the earlier Linux run.
 
-## Windows setup completed
+## Setup for teammates
 
-Dependencies are installed directly into local Python 3.12; a virtual environment is not required. An initial attempt with Python 3.13 failed because the pinned ContourPy version did not have a compatible wheel. Python 3.12.10 was installed instead. An intermediate `.venv312` environment was created but is no longer used.
+Use Git and Python 3.12. The checked-in policies run on CPU. Rendering requires a working OpenGL desktop or a virtual display on Linux. Downloading the full LIBERO-Goal suite takes approximately 6.4 GB.
 
-Run these commands from the project root in PowerShell. Use the full Python path to avoid accidentally using Python 3.13:
+From a fresh clone:
 
-```powershell
-$projectPython = 'C:\Users\owenr\AppData\Local\Programs\Python\Python312\python.exe'
-& $projectPython --version
+```text
+git clone --recurse-submodules https://github.com/aaravchowbey/cpsc6430-t2-robot-learning.git
+cd cpsc6430-t2-robot-learning
 ```
 
-On another computer, replace this path with the location of Python 3.12. To reproduce the dependency installation:
+In an existing checkout, run `git submodule update --init` from the project root. This fetches the recorded LIBERO revision.
+
+### Windows PowerShell
 
 ```powershell
-& $projectPython -m pip install torch==2.15.0 pyyaml bddl easydict hydra-core einops cloudpickle future matplotlib numpy==1.26.4 contourpy==1.2.1 robosuite==1.4.1 mujoco==3.1.6 gym==0.25.2 huggingface_hub h5py
-& $projectPython -m pip install -e .\LIBERO
-```
-
-`LIBERO/` is the upstream checkout from https://github.com/Lifelong-Robot-Learning/LIBERO. It is currently recorded as a Git repository pointer without `.gitmodules`; a fresh clone of this project will need a separate LIBERO checkout until proper submodule configuration is added.
-
-### Local compatibility fixes
-
-LIBERO's editable install did not expose its package correctly. A `.pth` file was added to Python's site-packages directory pointing to the checkout. robosuite 1.4.1 also needed its Windows rendering override disabled and the installed MuJoCo DLL made available at the path it expects. These fixes affect the local Python installation and are not included in Git.
-
-To reproduce them after installing the packages:
-
-```powershell
-$sitePackages = & $projectPython -c "import sysconfig; print(sysconfig.get_path('purelib'))"
-$liberoCheckout = (Resolve-Path .\LIBERO).Path
-Set-Content -LiteralPath "$sitePackages\libero_dev.pth" -Value $liberoCheckout -Encoding ascii
-Add-Content -LiteralPath "$sitePackages\robosuite\macros_private.py" -Value "`nMUJOCO_GPU_RENDERING = False"
-Copy-Item -LiteralPath "$sitePackages\mujoco\mujoco.dll" -Destination "$sitePackages\robosuite\utils\mujoco.dll"
-```
-
-The smoke-test script selects `MUJOCO_GL=glfw` on Windows. `glx` is only valid on Linux. Verify the installation:
-
-```powershell
+py -3.12 -m venv .venv
+$projectPython = '.venv/Scripts/python.exe'
+& $projectPython -m pip install -r requirements.txt
+& $projectPython setup_libero.py
+$env:LIBERO_CONFIG_PATH = (Resolve-Path .libero).Path
 & $projectPython -m pip check
-& $projectPython -c "from libero.libero import benchmark; print(benchmark.get_benchmark_dict().keys())"
 & $projectPython smoke_test.py
 ```
 
-On the first LIBERO import, answer `N` to the custom dataset-path question to initialize its default configuration. Expected results: `No broken requirements found`, the benchmark suite names, and finally `SMOKE TEST DONE`. A missing-datasets warning is expected when using the external data folder below; LIBERO's default configuration still points inside the checkout.
+### Linux
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python setup_libero.py
+export LIBERO_CONFIG_PATH="$PWD/.libero"
+.venv/bin/python -m pip check
+.venv/bin/python smoke_test.py
+```
+
+On headless Linux, use `xvfb-run -a .venv/bin/python smoke_test.py` and apply the same prefix to replay and policy commands. The setup script exposes the pinned LIBERO checkout to the virtual environment and configures robosuite's Windows rendering compatibility inside that environment. Set `LIBERO_CONFIG_PATH` again in new terminals before running the Python simulator or downloader commands. The smoke test should end with `SMOKE TEST DONE`.
 
 ## Checkpoint 2 progress — November 17, 2026
 
 The LIBERO-Goal demonstration dataset was downloaded from the upstream project's Hugging Face source, `yifengzhu-hf/LIBERO-datasets`. The downloader reported `[X] Dataset libero_goal is complete`. Other suites were not downloaded and are not required for the selected tasks.
 
-The data is stored outside the repository:
-
-```text
-C:\Users\owenr\Desktop\libero-data\libero_goal\
-    open_the_middle_drawer_of_the_cabinet_demo.hdf5
-    put_the_bowl_on_the_stove_demo.hdf5
-    ... eight other LIBERO-Goal task files
-```
-
-The full Goal download is approximately 6.4 GB. Keep the `.hdf5` files outside Git. Commit download instructions and split manifests identifying the selected episodes instead. Each HDF5 file contains episodes under `data/demo_*`, rather than separate episode files. The selected files have been inspected; their fields and episode counts are documented below.
-
-Download command used, run from the project root:
+Download the data from the repository root after setup:
 
 ```powershell
-& $projectPython -m pip install huggingface_hub h5py
-& $projectPython .\LIBERO\benchmark_scripts\download_libero_datasets.py --datasets libero_goal --use-huggingface --download-dir C:\Users\owenr\Desktop\libero-data
-Get-ChildItem C:\Users\owenr\Desktop\libero-data\libero_goal -Filter *.hdf5
+& $projectPython LIBERO/benchmark_scripts/download_libero_datasets.py --datasets libero_goal --use-huggingface --download-dir data
+$dataDir = 'data/libero_goal'
 ```
 
-Pass this external data location explicitly to future inspection, replay, and training scripts; the download command does not update LIBERO's default dataset configuration.
+On Linux, replace `& $projectPython` with `.venv/bin/python`. If you already have the data, set `$dataDir` to your own folder containing the HDF5 files. The project uses `open_the_middle_drawer_of_the_cabinet_demo.hdf5` and `put_the_bowl_on_the_stove_demo.hdf5`. Each stores episodes under `data/demo_*`. The checkpoints and frozen split manifests are included in the repository. Keep the downloaded HDF5 files out of Git.
+
+### Run the bowl execution demo
+
+From the repository root in Windows PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./run_bowl_demo.ps1
+```
+
+The launcher uses the project virtual environment and `data/libero_goal` by default. Pass `-DataDir 'path/to/libero_goal'` for an existing dataset or `-Python 'path/to/python.exe'` for another configured interpreter. The demo uses the dense checkpoint, validation episode `demo_1`, and seed 42. It prints the simulator outcome and saves a CSV and labeled MP4 to a fresh timestamped folder under `output/policies/execution_demo/`.
+
+On Linux, run the same demo with the Python entry point:
+
+```bash
+demo_dir=$(mktemp -d)
+.venv/bin/python run_policy.py --checkpoint output/policies/dense.pt --data-dir data/libero_goal --task 1 --episode demo_1 --seed 42 --max-steps 300 --results "$demo_dir/bowl_results.csv" --video-dir "$demo_dir/videos"
+```
 
 ### Data and simulator progress
 
@@ -116,16 +115,15 @@ The shared data loader, three policy variants, and autonomous validation runner 
 
 ### Train and run the policies
 
-Run from the repository root with the Windows Python path above:
+Run from the repository root with the virtual environment Python and dataset path above. On Linux, use `.venv/bin/python` and pass your data path directly:
 
 ```powershell
-$dataDir = 'C:\Users\owenr\Desktop\libero-data\libero_goal'
 $env:NUMBA_CACHE_DIR = Join-Path $env:TEMP 'libero-numba'
-& $projectPython train_policy.py --data-dir $dataDir --smoke --epochs 35
-& $projectPython train_policy.py --data-dir $dataDir --variant all --epochs 20
+& $projectPython train_policy.py --data-dir $dataDir --smoke --epochs 35 --output output/policies/local
+& $projectPython train_policy.py --data-dir $dataDir --variant all --epochs 20 --output output/policies/local
 
 foreach ($variant in @('vision', 'dense', 'grid')) {
-    & $projectPython run_policy.py --checkpoint "output/policies/$variant.pt" --data-dir $dataDir --results "output/policies/${variant}_validation.csv" --video-dir output/policies/validation --per-task 1 --max-steps 300
+    & $projectPython run_policy.py --checkpoint "output/policies/local/$variant.pt" --data-dir $dataDir --results "output/policies/local/${variant}_validation.csv" --video-dir output/policies/local/validation --per-task 1 --max-steps 300
 }
 ```
 
@@ -152,8 +150,8 @@ Inspection found 50 demonstrations in each selected file (100 total). Both conta
 `replay_episode.py` restores the episode's recorded scene model, fixes local asset paths, checks starting-state restoration, and saves a two-camera MP4 with task, episode, seed, replay mode, and simulator-success labels.
 
 ```powershell
-& $projectPython replay_episode.py --data-dir C:\Users\owenr\Desktop\libero-data\libero_goal --task 0 --episode demo_0
-& $projectPython replay_episode.py --data-dir C:\Users\owenr\Desktop\libero-data\libero_goal --task 1 --episode demo_0
+& $projectPython replay_episode.py --data-dir $dataDir --task 0 --episode demo_0
+& $projectPython replay_episode.py --data-dir $dataDir --task 1 --episode demo_0
 ```
 
 Videos are saved under `output/replays/`. The default `--mode states` restores successive recorded states for faithful visualization. To test stepping the simulator with recorded actions from the restored starting state, add `--mode actions`. Action replay can diverge when simulator versions or controller behavior differ from data collection. The printed seed identifies the reset before restoration; the recorded state determines the replay's actual starting scene.
@@ -162,7 +160,7 @@ The drawer task's `demo_0` state and action replays passed restoration and finis
 
 ### Frozen episode splits
 
-`create_splits.py` created `splits/train.csv`, `splits/validation.csv`, `splits/test.csv`, and `splits/summary.json`, using seed 42 and all 100 demonstrations:
+`splits/create_splits.py` created `splits/train.csv`, `splits/validation.csv`, `splits/test.csv`, and `splits/summary.json`, using seed 42 and all 100 demonstrations:
 
 | Task | Training | Validation | Test | Total |
 |---|---:|---:|---:|---:|
@@ -177,7 +175,7 @@ Grouping compares non-robot joint positions rounded to four decimals and fixed s
 To reproduce into a new folder (the script refuses to overwrite existing manifests):
 
 ```powershell
-& $projectPython create_splits.py --data-dir C:\Users\owenr\Desktop\libero-data\libero_goal --output-dir splits-reproduced --seed 42
+& $projectPython splits/create_splits.py --data-dir $dataDir --output-dir splits-reproduced --seed 42
 ```
 
 Fit learned preprocessing on training episodes only, select models using validation episodes, and reserve test episodes for final testing. The 15 test demonstrations are separate from the requirement for 20 autonomous simulator rollouts per policy per task; rollout initial states and seeds still need a declared held-out evaluation protocol.
@@ -186,7 +184,7 @@ Fit learned preprocessing on training episodes only, select models using validat
 
 - `smoke_test.py` — LIBERO-Goal environment smoke test
 - `replay_episode.py` — simulator replay and labeled video export for recorded demonstrations
-- `create_splits.py` — deterministic whole-episode split generation and source-data fingerprints
+- `splits/create_splits.py` — deterministic whole-episode split generation and source-data fingerprints
 - `splits/` — frozen train, validation, and test manifests plus split metadata
 - `smoke_test_output.txt` — captured smoke-test output
 - `setup_log.md` — environment setup log
