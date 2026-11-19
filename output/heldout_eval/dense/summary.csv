@@ -1,0 +1,4 @@
+variant,task,n,successes,success_rate,wilson95_low,wilson95_high,mean_steps_successful,timeouts,median_inference_ms,visual_tokens,parameters,forward_mflops
+dense,open_the_middle_drawer_of_the_cabinet,20,0,0.0,0.0,0.161,,20,1.02,32,64759,10.54
+dense,put_the_bowl_on_the_stove,20,17,0.85,0.64,0.948,92.2,3,0.9,32,64759,10.54
+dense,both,40,17,0.425,0.285,0.578,92.2,23,1.02,32,64759,10.54

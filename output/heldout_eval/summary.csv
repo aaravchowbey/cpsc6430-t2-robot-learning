@@ -1,0 +1,10 @@
+variant,task,n,successes,success_rate,wilson95_low,wilson95_high,mean_steps_successful,timeouts,median_inference_ms,visual_tokens,parameters,forward_mflops
+vision,open_the_middle_drawer_of_the_cabinet,20,0,0.0,0.0,0.161,,20,1.08,32,64231,10.54
+vision,put_the_bowl_on_the_stove,20,9,0.45,0.258,0.658,88.6,11,0.9,32,64231,10.54
+vision,both,40,9,0.225,0.123,0.375,88.6,31,0.99,32,64231,10.54
+dense,open_the_middle_drawer_of_the_cabinet,20,0,0.0,0.0,0.161,,20,1.02,32,64759,10.54
+dense,put_the_bowl_on_the_stove,20,17,0.85,0.64,0.948,92.2,3,0.9,32,64759,10.54
+dense,both,40,17,0.425,0.285,0.578,92.2,23,1.02,32,64759,10.54
+grid,open_the_middle_drawer_of_the_cabinet,20,1,0.05,0.009,0.236,124.0,19,1.01,2,71915,10.25
+grid,put_the_bowl_on_the_stove,20,3,0.15,0.052,0.36,102.7,17,0.69,2,71915,10.25
+grid,both,40,4,0.1,0.04,0.231,108.0,36,0.98,2,71915,10.25

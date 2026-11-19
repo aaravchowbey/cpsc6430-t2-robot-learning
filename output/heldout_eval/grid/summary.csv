@@ -1,0 +1,4 @@
+variant,task,n,successes,success_rate,wilson95_low,wilson95_high,mean_steps_successful,timeouts,median_inference_ms,visual_tokens,parameters,forward_mflops
+grid,open_the_middle_drawer_of_the_cabinet,20,1,0.05,0.009,0.236,124.0,19,1.01,2,71915,10.25
+grid,put_the_bowl_on_the_stove,20,3,0.15,0.052,0.36,102.7,17,0.69,2,71915,10.25
+grid,both,40,4,0.1,0.04,0.231,108.0,36,0.98,2,71915,10.25
