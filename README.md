@@ -99,6 +99,16 @@ demo_dir=$(mktemp -d)
 .venv/bin/python run_policy.py --checkpoint output/policies/dense.pt --data-dir data/libero_goal --task 1 --episode demo_1 --seed 42 --max-steps 300 --results "$demo_dir/bowl_results.csv" --video-dir "$demo_dir/videos"
 ```
 
+### Record three runs per model and task
+
+With `evaluate_heldout.py` from the latest team checkout, run this from Windows PowerShell:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./run_comparison_demo.ps1
+```
+
+The launcher records nine clips for each task. All three models use drawer starts 37–39 and bowl starts 30–32. Each rollout starts in its own simulator process. Find the MP4s and rollout CSVs under the timestamped folder printed at the start. If a run is interrupted, repeat the command with `-OutputDir 'path/to/the/timestamped/folder'` to skip runs that already have a result and video. Pass `-DataDir` and `-Python` to use an existing dataset or Python installation, as with the bowl launcher.
+
 ### Data and simulator progress
 
 - Completed: inspect both selected HDF5 files and select all 100 demonstrations, 50 per task.

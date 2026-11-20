@@ -1,0 +1,2 @@
+variant,epoch,smoke,split,task_id,episode,seed,outcome,steps,mean_inference_ms,visual_tokens
+dense,20,False,validation,1,demo_1,42,success,89,3.1549887637819656,32

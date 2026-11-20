@@ -323,12 +323,26 @@ def main():
     parser.add_argument("--out-dir", type=Path, default=Path("output/heldout_eval"))
     parser.add_argument("--videos", choices=("all", "none"), default="all")
     parser.add_argument("--threads", type=int, default=1)
+    parser.add_argument("--only-rollout", nargs=2, metavar=("VARIANT", "INIT"),
+                        help="Run just this variant and start while keeping the full selected manifest")
     parser.add_argument("--summary-only", action="store_true", help="Rebuild summary from rollouts.csv")
     args = parser.parse_args()
     torch.set_num_threads(args.threads)
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
     models = [(path, *load_policy(path)) for path in args.checkpoints]
+    selected = None
+    if args.only_rollout:
+        variant, raw_index = args.only_rollout
+        try:
+            index = int(raw_index)
+        except ValueError:
+            parser.error("--only-rollout INIT must be an integer")
+        if variant not in {model.variant for _, model, _ in models}:
+            parser.error("--only-rollout VARIANT must match a selected checkpoint")
+        if not args.first_init <= index < args.first_init + args.n:
+            parser.error("--only-rollout INIT must be in the selected start range")
+        selected = (variant, index)
     budgets = {}
     for path, model, _ in models:
         params, flops = compute_budget(model)
@@ -366,7 +380,7 @@ def main():
             init_state = init_cache[start["task_id"]][start["init_index"]]
             for path, model, checkpoint in models:
                 key = (model.variant, start["task_id"], start["init_index"])
-                if key in done:
+                if key in done or (selected is not None and (model.variant, start["init_index"]) != selected):
                     continue
                 video = None
                 if args.videos == "all":

@@ -1,0 +1,7 @@
+variant,task,n,successes,success_rate,wilson95_low,wilson95_high,mean_steps_successful,timeouts,median_inference_ms,visual_tokens,parameters,forward_mflops
+vision,open_the_middle_drawer_of_the_cabinet,3,0,0.0,0.0,0.562,,3,1.62,32,64231,10.54
+vision,both,3,0,0.0,0.0,0.562,,3,1.62,32,64231,10.54
+dense,open_the_middle_drawer_of_the_cabinet,3,0,0.0,0.0,0.562,,3,1.64,32,64759,10.54
+dense,both,3,0,0.0,0.0,0.562,,3,1.64,32,64759,10.54
+grid,open_the_middle_drawer_of_the_cabinet,3,0,0.0,0.0,0.562,,3,1.79,2,71915,10.25
+grid,both,3,0,0.0,0.0,0.562,,3,1.79,2,71915,10.25

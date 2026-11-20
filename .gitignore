@@ -2,5 +2,4 @@
 /.libero/
 /data/
 __pycache__/
-/output/policies/execution_demo/
 /output/policies/local/
