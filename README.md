@@ -207,3 +207,7 @@ I, Owen Rogers, used OpenAI’s ChatGPT to help write the PowerShell demo launch
 ## Submitted version
 
 Release tag: checkpoint2 (https://github.com/aaravchowbey/cpsc6430-t2-robot-learning/tree/checkpoint2)
+
+## Submitted version
+
+Release tag: checkpoint2 (https://github.com/aaravchowbey/cpsc6430-t2-robot-learning/tree/checkpoint2)
