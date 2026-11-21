@@ -204,3 +204,6 @@ Fit learned preprocessing on training episodes only, select models using validat
 ## AI Assistance
 
 I, Owen Rogers, used OpenAI’s ChatGPT to help write the PowerShell demo launchers, the LIBERO setup script, add a single-rollout option to the evaluation script, and update the README with setup and demo instructions. 
+## Submitted version
+
+Release tag: checkpoint2 (https://github.com/aaravchowbey/cpsc6430-t2-robot-learning/tree/checkpoint2)
