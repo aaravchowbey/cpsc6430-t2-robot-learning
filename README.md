@@ -200,3 +200,7 @@ Fit learned preprocessing on training episodes only, select models using validat
 - `setup_log.md` — environment setup log
 - `SETUP_STATUS.md` — setup status summary
 - `paper_summary.md` — structured summary of the Grid Sampler paper
+
+## AI Assistance
+
+I, Owen Rogers, used OpenAI’s ChatGPT to help write the PowerShell demo launchers, the LIBERO setup script, add a single-rollout option to the evaluation script, and update the README with setup and demo instructions. 
